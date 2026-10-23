@@ -2,6 +2,7 @@
 import type { CollectionEntry } from 'astro:content';
 import { archiveCopy } from '~/i18n/archive';
 import ArchStudyVisual from './ArchStudyVisual.astro';
+import WebsiteVisual from './WebsiteVisual.astro';
 import { siteBase } from '~/i18n';
 interface Props {
   project: CollectionEntry<'project'>;
@@ -41,6 +42,8 @@ const media = data.video;
         </>
       </span>
     </a>
+  ) : data.translationKey === 'shea-creative-desktop' ? (
+    <WebsiteVisual locale={data.locale} compact={compact} />
   ) : (
     <ArchStudyVisual locale={data.locale} compact={compact} />
   )

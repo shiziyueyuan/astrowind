@@ -1,0 +1,154 @@
+---
+import SheaWordmark from '~/assets/brand/shea-wordmark.svg';
+import type { Locale } from '~/i18n';
+import { websiteProjectCopy } from '~/i18n/website-project';
+interface Props {
+  locale: Locale;
+  compact?: boolean;
+}
+const { locale, compact = false } = Astro.props;
+const copy = websiteProjectCopy[locale];
+---
+
+<figure class:list={['website-visual', { 'is-compact': compact }]}>
+  <div class="website-preview" role="img" aria-label={copy.visualDescription}>
+    <div class="website-preview-bar mono" aria-hidden="true"><span>SHEA / DESKTOP</span><span>03 / WEB</span></div>
+    <div class="website-preview-canvas" aria-hidden="true">
+      <div class="website-preview-apps mono">
+        {
+          ['ENTRY', 'IDENTITY', 'ARCHIVE', 'LAB', 'SIGNAL'].map((name) => (
+            <span>
+              <i />
+              {name}
+            </span>
+          ))
+        }
+      </div>
+      <div class="website-preview-brand"><SheaWordmark /><span>{copy.tagline}</span></div>
+      <div class="website-preview-window">
+        <div class="mono"><span>LAB / 04</span><span>×</span></div>
+        <span class="website-preview-code mono">&lt;idea /&gt;</span>
+        <span class="website-preview-line"></span><span class="website-preview-line is-short"></span>
+      </div>
+    </div>
+    <div class="website-preview-footer mono" aria-hidden="true">
+      <span>ZH / EN / JA</span><span>OPEN TO EXPLORE ↗</span>
+    </div>
+  </div>
+  <figcaption>{copy.visualCaption}</figcaption>
+</figure>
+
+<style>
+  .website-visual {
+    margin: 0;
+    min-width: 0;
+  }
+  .website-preview {
+    border: 1px solid var(--desk-line);
+    background: var(--desk-surface);
+    overflow: hidden;
+  }
+  .website-preview-bar,
+  .website-preview-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 15px 17px;
+    color: var(--desk-muted);
+    font-size: 9px;
+  }
+  .website-preview-bar {
+    border-bottom: 1px solid var(--desk-line);
+  }
+  .website-preview-footer {
+    border-top: 1px solid var(--desk-line);
+    font-size: 8px;
+  }
+  .website-preview-canvas {
+    position: relative;
+    display: grid;
+    grid-template-columns: 72px minmax(0, 1fr);
+    min-height: 275px;
+    padding: 23px 17px;
+    background: radial-gradient(ellipse at 70% 70%, var(--desk-accent), transparent 73%);
+  }
+  .website-preview-apps {
+    display: grid;
+    gap: 13px;
+    align-content: start;
+  }
+  .website-preview-apps > span {
+    display: grid;
+    justify-items: center;
+    gap: 5px;
+    width: 46px;
+    font-size: 6px;
+  }
+  .website-preview-apps i {
+    display: block;
+    width: 23px;
+    height: 23px;
+    border: 1px solid var(--desk-accent-ink);
+    border-radius: 5px;
+    background: var(--desk-accent);
+  }
+  .website-preview-brand {
+    padding-top: 32px;
+    text-align: center;
+  }
+  .website-preview-brand svg {
+    display: block;
+    width: 75%;
+    height: auto;
+    margin: 0 auto 12px;
+  }
+  .website-preview-brand > span {
+    font-size: 12px;
+  }
+  .website-preview-window {
+    position: absolute;
+    width: 43%;
+    right: 21px;
+    bottom: 24px;
+    background: var(--desk-paper);
+    border: 1px solid var(--desk-ink);
+    box-shadow: 5px 5px 0 var(--desk-line);
+    transform: rotate(-3deg);
+  }
+  .website-preview-window > div {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--desk-line);
+    font-size: 7px;
+  }
+  .website-preview-code {
+    display: block;
+    padding: 14px 12px 12px;
+    font-size: 15px;
+  }
+  .website-preview-line {
+    display: block;
+    margin: 0 12px 8px;
+    height: 3px;
+    background: var(--desk-line);
+  }
+  .website-preview-line.is-short {
+    width: 45%;
+    margin-bottom: 17px;
+  }
+  figcaption {
+    padding-top: 12px;
+    color: var(--desk-muted);
+    font-size: 10px;
+    line-height: 1.8;
+  }
+  .is-compact .website-preview-canvas {
+    min-height: 245px;
+  }
+  @media (max-width: 700px) {
+    .website-preview-canvas {
+      min-height: 260px;
+    }
+  }
+</style>

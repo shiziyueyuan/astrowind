@@ -6,6 +6,7 @@ import ProjectVisual from '~/components/archive/ProjectVisual.astro';
 import ProjectVideo from '~/components/archive/ProjectVideo.astro';
 import { localePath } from '~/i18n';
 import { archiveCopy } from '~/i18n/archive';
+import { websiteProjectCopy } from '~/i18n/website-project';
 
 export async function getStaticPaths() {
   const projects = await getCollection('project', ({ data }) => !data.draft);
@@ -21,8 +22,9 @@ const { project } = Astro.props;
 const { data } = project;
 const locale = data.locale;
 const copy = archiveCopy[locale];
-const stages = data.video ? copy.video.stages : copy.stages;
-const end = data.video ? copy.video.end : copy.end;
+const website = data.translationKey === 'shea-creative-desktop' ? websiteProjectCopy[locale] : undefined;
+const stages = website?.stages ?? (data.video ? copy.video.stages : copy.stages);
+const end = website?.end ?? (data.video ? copy.video.end : copy.end);
 const { Content, headings } = await render(project);
 const pathSuffix = `/archive/${data.translationKey}`;
 ---
