@@ -1,317 +1,46 @@
-# 🚀 AstroWind
+# 时咨月圆 / Shea
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/lighthouse-dark.svg">
-  <img src=".github/assets/lighthouse-light.svg" align="right" alt="Lighthouse scores: Performance 100, Accessibility 100, Best Practices 100, SEO 100" width="100" height="358">
-</picture>
+一张可以自由探索的个人创作桌面。跨领域创造者，把想法变成作品。
 
-🌟 _Most *starred* & *forked* Astro theme in 2022, 2023, 2024 & 2025_. 🌟
+公开网站：**https://shiziyueyuan.github.io/astrowind/**
 
-**AstroWind** is a free and open-source template to make your website using **[Astro v7](https://astro.build/) + [Tailwind CSS v4](https://tailwindcss.com/)**. Ready to start a new project and designed taking into account web best practices.
+基于官方 [AstroWind](https://github.com/arthelokyo/astrowind) 模板，保留 MIT 许可证。
 
-- ✅ **Production-ready** scores in **PageSpeed Insights** reports.
-- ✅ **30+ page-section widgets** (heroes, features, bento, tabs, pricing with comparison table, FAQ accordion, testimonials, team, timeline, gallery, projects, countdown, newsletter…) typed and composable.
-- ✅ Integration with **Tailwind CSS v4** supporting **Dark mode** and **_RTL_**.
-- ✅ **Fast and SEO friendly blog** with automatic **RSS feed**, **MDX** support, **Categories & Tags**, **Social Share**, ...
-- ✅ **Image Optimization** (using new **Astro Assets** and **Unpic** for Universal image CDN).
-- ✅ Generation of **project sitemap** based on your routes.
-- ✅ **Open Graph tags** for social media sharing.
-- ✅ **Analytics** built-in Google Analytics integration.
-- ✅ **shadcn/ui-compatible design tokens** (`bg-background`, `text-foreground`, `border-border`…) derived from the theme variables.
-- ✅ **AI-ready**: `AGENTS.md` and step-by-step skills in `.agents/skills/` for Claude Code, Codex, Cursor and similar tools.
+## 探索
 
-<br>
+ENTRY 数字入口、IDENTITY 关于我、ARCHIVE 项目档案、LAB 实验与博客、SIGNAL 联系终端。中英日三语界面、系统与手动主题、自由拖动窗口及可跳过的开场动画。
 
-![AstroWind Theme Screenshot](https://raw.githubusercontent.com/arthelokyo/.github/main/resources/astrowind/screenshot-astrowind-readme-def-v1.png)
+现有作品包含经过隐私处理的石拱桥轮廓研究，以及空白解谜组 / PoorerArt 的协作影像记录。过程与协作优先，不虚构项目成果。
 
-[![arthelokyo](https://custom-icon-badges.demolab.com/badge/made%20by%20-arthelokyo-556bf2?style=flat-square&logo=arthelokyo&logoColor=white&labelColor=101827)](https://arthelokyo.com)
-[![License](https://img.shields.io/github/license/arthelokyo/astrowind?style=flat-square&color=dddddd&labelColor=000000)](https://github.com/arthelokyo/astrowind/blob/main/LICENSE.md)
-[![Maintained](https://img.shields.io/badge/maintained%3F-yes-brightgreen.svg?style=flat-square)](https://github.com/arthelokyo)
-[![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat-square)](https://github.com/arthelokyo/astrowind#contributing)
-[![Known Vulnerabilities](https://snyk.io/test/github/arthelokyo/astrowind/badge.svg?style=flat-square)](https://snyk.io/test/github/arthelokyo/astrowind)
-[![Stars](https://img.shields.io/github/stars/arthelokyo/astrowind.svg?style=social&label=stars&maxAge=86400&color=ff69b4)](https://github.com/arthelokyo/astrowind)
-[![Forks](https://img.shields.io/github/forks/arthelokyo/astrowind.svg?style=social&label=forks&maxAge=86400&color=ff69b4)](https://github.com/arthelokyo/astrowind)
+## 本机使用
 
-<br>
+需要 Node.js 24 与 npm。
 
-<details open>
-<summary>Table of Contents</summary>
-
-- [Demo](#demo)
-- [TL;DR](#tldr)
-- [Getting started](#getting-started)
-  - [Project structure](#project-structure)
-  - [Commands](#commands)
-  - [Configuration](#configuration)
-  - [Deploy](#deploy)
-- [FAQ](#faq)
-- [Contributing](#contributing)
-- [Acknowledgements](#acknowledgements)
-- [License](#license)
-
-</details>
-
-<br>
-
-## Demo
-
-📌 [https://astrowind.vercel.app/](https://astrowind.vercel.app/)
-
-<br>
-
-## TL;DR
-
-```shell
-npm create astro@latest -- --template arthelokyo/astrowind
-```
-
-## Getting started
-
-**AstroWind** tries to give you quick access to creating a website using [Astro v7](https://astro.build/) + [Tailwind CSS v4](https://tailwindcss.com/). It's a free theme which focuses on simplicity, good practices and high performance.
-
-Very little vanilla javascript is used only to provide basic functionality so that each developer decides which framework (React, Vue, Svelte, Solid JS...) to use and how to approach their goals.
-
-> **Note:** Requires **Node.js >= 22.22.3** (see `.nvmrc`). The template currently uses `output: 'static'`, but the blog only works with `prerender = true`.
-
-### Project structure
-
-Inside **AstroWind** template, you'll see the following folders and files:
-
-```
-/
-├── .agents/
-│   └── skills/
-├── AGENTS.md
-├── public/
-│   ├── _headers
-│   └── robots.txt
-├── src/
-│   ├── assets/
-│   │   ├── favicons/
-│   │   ├── images/
-│   │   └── styles/
-│   │       ├── shadcn.css
-│   │       └── tailwind.css
-│   ├── components/
-│   │   ├── blog/
-│   │   ├── common/
-│   │   ├── ui/
-│   │   ├── widgets/
-│   │   │   ├── Header.astro
-│   │   │   └── ...
-│   │   ├── CustomStyles.astro
-│   │   ├── Favicons.astro
-│   │   └── Logo.astro
-│   ├── content.config.ts
-│   ├── data/
-│   │   └── post/
-│   │       ├── post-slug-1.md
-│   │       ├── post-slug-2.mdx
-│   │       └── ...
-│   ├── layouts/
-│   │   ├── Layout.astro
-│   │   ├── MarkdownLayout.astro
-│   │   └── PageLayout.astro
-│   ├── pages/
-│   │   ├── [...blog]/
-│   │   │   ├── [category]/
-│   │   │   ├── [tag]/
-│   │   │   ├── [...page].astro
-│   │   │   └── index.astro
-│   │   ├── index.astro
-│   │   ├── 404.astro
-│   │   ├-- rss.xml.ts
-│   │   └── ...
-│   ├── utils/
-│   ├── config.yaml
-│   └── navigation.ts
-├── package.json
-├── astro.config.ts
-└── ...
-```
-
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory if they do not require any transformation or in the `assets/` directory if they are imported directly.
-
-[![Edit AstroWind on CodeSandbox](https://codesandbox.io/static/img/play-codesandbox.svg)](https://githubbox.com/arthelokyo/astrowind/tree/main) [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/arthelokyo/astrowind)
-
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file `README.md`. Update `src/config.yaml` and contents. Have fun!
-
-<br>
-
-### Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command             | Action                                             |
-| :------------------ | :------------------------------------------------- |
-| `npm install`       | Installs dependencies                              |
-| `npm run dev`       | Starts local dev server at `localhost:4321`        |
-| `npm run build`     | Build your production site to `./dist/`            |
-| `npm run preview`   | Preview your build locally, before deploying       |
-| `npm run check`     | Check your project for errors                      |
-| `npm run fix`       | Run Eslint and format codes with Prettier          |
-| `npm run astro ...` | Run CLI commands like `astro add`, `astro preview` |
-
-<br>
-
-### Configuration
-
-Basic configuration file: `./src/config.yaml`
-
-```yaml
-site:
-  name: 'Example'
-  site: 'https://example.com'
-  base: '/' # Change this if you need to deploy to Github Pages, for example
-  trailingSlash: false # Generate permalinks with or without "/" at the end
-
-  googleSiteVerificationId: false # Or some value,
-
-# Default SEO metadata
-metadata:
-  title:
-    default: 'Example'
-    template: '%s — Example'
-  description: 'This is the default meta description of Example website'
-  robots:
-    index: true
-    follow: true
-  openGraph:
-    site_name: 'Example'
-    images:
-      - url: '~/assets/images/default.png'
-        width: 1200
-        height: 628
-    type: website
-  twitter:
-    handle: '@twitter_user'
-    site: '@twitter_user'
-    cardType: summary_large_image
-
-i18n:
-  language: en
-  textDirection: ltr
-
-apps:
-  blog:
-    isEnabled: true # If the blog will be enabled
-    postsPerPage: 6 # Number of posts per page
-
-    post:
-      isEnabled: true
-      permalink: '/blog/%slug%' # Variables: %slug%, %year%, %month%, %day%, %hour%, %minute%, %second%, %category%
-      robots:
-        index: true
-
-    list:
-      isEnabled: true
-      pathname: 'blog' # Blog main path, you can change this to "articles" (/articles)
-      robots:
-        index: true
-
-    category:
-      isEnabled: true
-      pathname: 'category' # Category main path /category/some-category, you can change this to "group" (/group/some-category)
-      robots:
-        index: true
-
-    tag:
-      isEnabled: true
-      pathname: 'tag' # Tag main path /tag/some-tag, you can change this to "topics" (/topics/some-category)
-      robots:
-        index: false
-
-    isRelatedPostsEnabled: true # If a widget with related posts is to be displayed below each post
-    relatedPostsCount: 4 # Number of related posts to display
-
-analytics:
-  vendors:
-    googleAnalytics:
-      id: null # or "G-XXXXXXXXXX"
-
-ui:
-  theme: 'system' # Values: "system" | "light" | "dark" | "light:only" | "dark:only"
-```
-
-<br>
-
-#### Customize Design
-
-With Tailwind CSS v4, all configuration is CSS-first. To customize Font families, Colors or more Elements refer to the following files:
-
-- `src/components/CustomStyles.astro` — CSS variables for colors and fonts
-- `src/assets/styles/tailwind.css` — Tailwind theme tokens (`@theme`), custom utilities (`@utility`), and plugins
-- `src/assets/styles/shadcn.css` — shadcn/ui-compatible variables (`--background`, `--border`, `--ring`…) derived from the theme, so shadcn-style components pick up your colors
-
-### Deploy
-
-#### Deploy to production (manual)
-
-You can create an optimized production build with:
-
-```shell
+```sh
+npm ci
 npm run build
+npm run preview -- --host 127.0.0.1 --port 4323
 ```
 
-Now, your website is ready to be deployed. All generated files are located at
-`dist` folder, which you can deploy the folder to any hosting service you
-prefer.
+本地桌面：http://127.0.0.1:4323/zh
 
-#### Deploy to Netlify
+本地写作间：双击 **打开写作间.cmd**，随后访问 http://127.0.0.1:4324 。也可运行 `npm run studio`。
 
-Clone this repository on your own GitHub account and deploy it to Netlify:
+## 通过 Markdown 写博客
 
-[![Netlify Deploy button](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/arthelokyo/astrowind)
+1. 在本机写作间导入 `.md`，或直接输入正文。
+2. 填写标题、正文语言、分类、日期、文章地址。
+3. “保存草稿”只保存在本机；“发布到本地预览”生成阅读页。
+4. 确认后“同步到公开网站”，推送公开文章并触发 GitHub Pages 更新。
 
-#### Deploy to Vercel
+博客只读，不开放评论、回复或留言。草稿位于仓库外的 `work/journal-studio/drafts`，不随站点发布。管理服务仅监听本机，不部署到 Pages。若没有对应译文，其他语言界面明确展示原文，不自动编造翻译。
 
-Clone this repository on your own GitHub account and deploy to Vercel:
+详细说明：[写作间](docs/round-06-journal.md)、[GitHub Pages](docs/github-pages.md)。
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Farthelokyo%2Fastrowind)
+## 发布
 
-#### Deploy to Cloudflare
+推送至 `main` 后，由 GitHub Actions 检查、构建并部署 `dist`。部署环境使用 `/astrowind` 基路径；普通本地构建使用 `/`。模板示例页面保留在 `examples/` 供参考，不生成公开路由。
 
-Clone this repository on your own GitHub account and deploy it to Cloudflare Workers (static assets, no adapter needed; the `wrangler.jsonc` in the repo points Cloudflare at `dist/`):
+本项目仍按十轮计划逐步完善，当前包含第 6 轮博客与用户明确要求的提前上线工作。
 
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/arthelokyo/astrowind)
-
-<br>
-
-## FAQ
-
-**Is AstroWind v1 still maintained?**
-Yes, in maintenance mode: v1 receives dependency updates and bug fixes, while new development goes to AstroWind v2 (October 2026).
-
-**How do I disable the blog, change the Open Graph image, deploy under a sub-path, connect a CMS, deploy to Cloudflare…?**
-Ask your AI coding assistant. AstroWind is _AI-ready_: the repository ships an [`AGENTS.md`](./AGENTS.md) with the project conventions and step-by-step skills in [`.agents/skills/`](./.agents/skills/) for the most common tasks, so Claude Code, Codex/ChatGPT, Cursor, Copilot and similar tools can do them reliably (and you can read the skills yourself).
-
-**Which widgets are there and how do I use them?**
-Every section is a component in `src/components/widgets/` with typed props. The catalogue with props and where each one is demoed is in [`.agents/skills/use-widgets.md`](./.agents/skills/use-widgets.md); the six pages in `src/pages/landing/` show them combined into complete landing pages.
-
-**Where do blog posts go?**
-`src/data/post/` as `.md` or `.mdx` files. They are read at build time.
-
-**Where do I change colors and fonts?**
-Colors in `src/components/CustomStyles.astro` (CSS variables for light and dark), Tailwind tokens and utilities in `src/assets/styles/tailwind.css`, fonts in the `fonts` entry of `astro.config.ts`.
-
-**Which Node.js version do I need?**
-Node.js 22.22.3 or newer (`.nvmrc`).
-
-<br>
-
-## Contributing
-
-If you have any ideas, suggestions or find any bugs, feel free to open a discussion, an issue or create a pull request.
-That would be very useful for all of us and we would be happy to listen and take action.
-
-## Acknowledgements
-
-Initially created by [**Arthelokyo**](https://arthelokyo.com) and maintained by a community of [contributors](https://github.com/arthelokyo/astrowind/graphs/contributors).
-
-## License
-
-**AstroWind** is licensed under the MIT license — see the [LICENSE](./LICENSE.md) file for details.
+字体均采用 SIL OFL 1.1，完整授权见 `public/fonts/licenses/`；字标为 SVG 路径。AstroWind 原始说明保留于 [examples/ASTROWIND-README.md](examples/ASTROWIND-README.md)。

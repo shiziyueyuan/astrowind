@@ -1,0 +1,79 @@
+---
+import type { Locale } from '~/i18n';
+import { contactCopy } from '~/i18n/contact';
+import { contactChannels } from '~/data/contact-channels';
+import '~/assets/styles/contact.css';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const copy = contactCopy[locale];
+---
+
+<section
+  class="contact-terminal"
+  aria-label={copy.channels}
+  data-contact-terminal
+  data-copy-success={copy.success}
+  data-copy-manual={copy.manual}
+  data-copy-done={copy.copied}
+>
+  <ul class="contact-channels">
+    {
+      contactChannels.map((channel, index) => (
+        <li class="contact-channel" data-contact-channel={channel.id}>
+          <div class="contact-information">
+            <p class="contact-platform">
+              <span class="contact-index mono" aria-hidden="true">
+                0{index + 1}
+              </span>
+              <span>{copy.platforms[channel.id]}</span>
+            </p>
+            <code class="contact-account" data-contact-value dir="ltr">
+              {channel.account}
+            </code>
+            <p class="contact-detail">
+              {channel.nickname ? (
+                <>
+                  <span>{copy.nickname} · </span>
+                  {channel.nickname}
+                </>
+              ) : (
+                copy.emailHint
+              )}
+            </p>
+          </div>
+          <button
+            type="button"
+            class="contact-copy"
+            data-copy-contact={channel.account}
+            data-channel-name={copy.platforms[channel.id]}
+            aria-label={copy.copyLabel.replace('{channel}', copy.platforms[channel.id])}
+            hidden
+          >
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              aria-hidden="true"
+            >
+              <rect x="8" y="8" width="12" height="12" rx="2" />
+              <path d="M16 8V5A2 2 0 0 0 14 3H5A2 2 0 0 0 3 5V14A2 2 0 0 0 5 16H8" />
+            </svg>
+            <span data-copy-label>{copy.copy}</span>
+          </button>
+        </li>
+      ))
+    }
+  </ul>
+  <p class="contact-feedback" role="status" aria-live="polite" aria-atomic="true" data-contact-feedback></p>
+</section>
+
+<script>
+  import { initContactTerminal } from './contact-controller';
+  initContactTerminal();
+</script>

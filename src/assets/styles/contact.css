@@ -1,0 +1,103 @@
+.contact-terminal {
+  margin-top: 26px;
+}
+.contact-channels {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.contact-channel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 19px 0;
+  border-bottom: 1px solid var(--desk-line);
+}
+.contact-information {
+  min-width: 0;
+}
+.contact-platform {
+  display: flex;
+  gap: 9px;
+  align-items: baseline;
+  margin: 0 0 7px;
+  font-size: 11px;
+  color: var(--desk-muted);
+}
+.contact-index {
+  font-size: 9px;
+  color: var(--desk-muted);
+}
+.contact-account {
+  display: inline-block;
+  max-width: 100%;
+  font-family: var(--desk-mono);
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--desk-ink);
+  overflow-wrap: anywhere;
+  user-select: text;
+}
+.contact-detail {
+  margin: 5px 0 0;
+  color: var(--desk-muted);
+  font-size: 10px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.contact-terminal .contact-copy {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 76px;
+  min-height: 44px;
+  padding: 8px 10px;
+  border: 1px solid var(--desk-line);
+  border-radius: 8px;
+  background: var(--desk-surface);
+  color: var(--desk-ink);
+  font-size: 11px;
+  line-height: 1.4;
+  white-space: nowrap;
+  transition:
+    background var(--desk-fast),
+    border-color var(--desk-fast);
+}
+.contact-terminal .contact-copy[hidden] {
+  display: none;
+}
+.contact-copy svg {
+  flex-shrink: 0;
+}
+.contact-terminal .contact-copy:hover {
+  background: var(--desk-accent);
+  color: var(--desk-accent-ink);
+  border-color: var(--desk-muted);
+}
+.contact-terminal .contact-copy:disabled {
+  cursor: progress;
+  opacity: 0.6;
+}
+.contact-feedback {
+  min-height: 20px;
+  margin: 11px 0 12px;
+  font-size: 11px;
+  line-height: 1.8;
+  color: var(--desk-muted);
+}
+@media (max-width: 370px) {
+  .contact-channel {
+    gap: 9px;
+  }
+  .contact-terminal .contact-copy {
+    min-width: 68px;
+    padding-inline: 8px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .contact-terminal .contact-copy {
+    transition: none;
+  }
+}

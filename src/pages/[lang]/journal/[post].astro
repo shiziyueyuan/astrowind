@@ -1,0 +1,85 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+import { locales, localePath, languageNames, languageTags, type Locale } from '~/i18n';
+import DesktopLayout from '~/layouts/DesktopLayout.astro';
+import DesktopHeader from '~/components/desktop/DesktopHeader.astro';
+import { journalCopy } from '~/i18n/journal';
+import { journalForLocale, journalHref, journalDate } from '~/utils/journal';
+import '~/assets/styles/journal.css';
+export async function getStaticPaths() {
+  return (
+    await Promise.all(
+      locales.map(async (locale) =>
+        (await journalForLocale(locale)).map((post) => ({
+          params: { lang: locale, post: post.data.translationKey },
+          props: { post, locale },
+        }))
+      )
+    )
+  ).flat();
+}
+interface Props {
+  post: CollectionEntry<'journal'>;
+  locale: Locale;
+}
+const { post, locale } = Astro.props;
+const { data } = post;
+const copy = journalCopy[locale];
+const { Content, headings } = await render(post);
+const suffix = `/journal/${data.translationKey}`;
+---
+
+<DesktopLayout locale={locale} title={data.title} description={data.description} pathSuffix={suffix}>
+  <a class="skip-link" href="#journal-article">{copy.reading}</a>
+  <div class="workspace journal-workspace">
+    <DesktopHeader locale={locale} pathSuffix={suffix} />
+    <main class="journal-main">
+      <a class="project-back mono" href={journalHref(locale)}>↖ {copy.all}</a>
+      <header class="journal-heading">
+        <p class="journal-meta mono">
+          <span>{copy.kinds[data.kind]}</span>{
+            data.publishDate && <time datetime={data.publishDate}>{journalDate(data.publishDate, locale)}</time>
+          }<span>Shea</span>
+        </p><h1 lang={languageTags[data.locale]}>{data.title}</h1>{
+          data.description && <p lang={languageTags[data.locale]}>{data.description}</p>
+        }<p class="journal-meta">{copy.source} · {languageNames[data.locale]}</p>
+      </header>
+      {data.locale !== locale && <p class="journal-language-note">{copy.fallback}</p>}
+      <div class="journal-reading">
+        {
+          headings.some((heading) => heading.depth === 2) && (
+            <nav class="journal-contents" aria-label={copy.contents}>
+              <>
+                <p class="mono">{copy.contents}</p>
+                <ol>
+                  {headings
+                    .filter((heading) => heading.depth === 2)
+                    .map((heading) => (
+                      <li>
+                        <a href={`#${heading.slug}`}>{heading.text}</a>
+                      </li>
+                    ))}
+                </ol>
+              </>
+            </nav>
+          )
+        }
+        <article id="journal-article" class="journal-prose" lang={languageTags[data.locale]} tabindex="-1">
+          <Content />
+        </article>
+      </div>
+      <footer class="journal-end">
+        <p>{copy.end}</p><p class="journal-readonly mono">{copy.readOnly}</p><a
+          class="journal-all"
+          href={`${localePath(locale)}#lab`}>{copy.back} ↗</a
+        >
+      </footer>
+    </main>
+    <footer class="desktop-footer"><span>SHEA / JOURNAL</span><span>时咨月圆 / Shea</span></footer>
+  </div>
+</DesktopLayout>
+<script>
+  import { initThemeControls, rememberLocaleSelection } from '~/utils/desktop-preferences';
+  initThemeControls();
+  rememberLocaleSelection();
+</script>

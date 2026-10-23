@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 144" width="520" height="144" fill="currentColor" role="img" aria-label="SHEA">
+  <g transform="translate(30 15) skewX(-10)">
+    <path d="M95 18C82 5 62 0 41 0C14 0 0 13 0 33C0 52 14 60 40 64L57 67C68 69 72 72 72 78C72 86 64 90 50 90C34 90 20 84 9 75L0 96C13 107 31 113 51 113C81 113 98 99 98 77C98 57 85 49 59 44L40 40C29 38 25 35 25 30C25 23 33 19 44 19C58 19 71 23 82 31Z"/>
+    <path transform="translate(118)" d="M0 0H25V43H70V0H95V112H70V67H25V112H0Z"/>
+    <path transform="translate(236)" d="M14 0H96L92 22H26V44H79L75 66H26V90H99L95 112H0V14A14 14 0 0 1 14 0Z"/>
+    <path transform="translate(348)" fill-rule="evenodd" d="M43 0H65L110 112H83L74 88H32L23 112H-4ZM40 66H66L53 29Z"/>
+    <circle class="shea-lettering-dot" cx="480" cy="104" r="9"/>
+  </g>
+</svg>

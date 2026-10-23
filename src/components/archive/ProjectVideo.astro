@@ -1,0 +1,46 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { archiveCopy } from '~/i18n/archive';
+import { siteBase } from '~/i18n';
+interface Props {
+  project: CollectionEntry<'project'>;
+}
+const {
+  project: { data },
+} = Astro.props;
+const copy = archiveCopy[data.locale].video;
+const media = data.video;
+const asset = (file: string) => `${siteBase}${file}`;
+---
+
+{
+  media && (
+    <section class="project-video" id="film" aria-labelledby="film-title">
+      <header class="film-heading">
+        <>
+          <h2 id="film-title">{copy.sectionTitle}</h2>
+          <span class="mono">1080P / 30 FPS / {media.duration}</span>
+        </>
+      </header>
+      <p class="film-notice">{copy.notice}</p>
+      <video
+        controls
+        playsinline
+        preload="none"
+        poster={asset(media.poster)}
+        aria-label={`${data.title} · ${copy.sectionTitle}`}
+        aria-describedby="film-language"
+      >
+        <source src={asset(media.src)} type="video/mp4" />
+        <track kind="captions" src={asset(media.captions)} srclang="zh-Hans" label={copy.captions} />
+        <p>
+          {copy.fallback}
+          <a href={asset(media.src)}>{copy.play}</a>
+        </p>
+      </video>
+      <p class="film-language" id="film-language">
+        {copy.languageNote}
+      </p>
+    </section>
+  )
+}

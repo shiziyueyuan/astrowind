@@ -1,48 +1,49 @@
 ---
-// Font family is provided by Astro's native Fonts API (see `fonts` in
-// astro.config.ts and <Font /> in Layout.astro), exposed as `--font-inter`.
-// To switch typefaces, change the `fonts` entry and repoint `--aw-font-*` below.
+// Theme variables shared by AstroWind and the Shea desktop foundation.
 ---
 
 <style is:inline>
   :root {
-    --aw-font-sans: var(--font-inter);
-    --aw-font-serif: var(--font-inter);
-    --aw-font-heading: var(--font-inter);
+    --shea-cjk: var(--font-wenkai), var(--font-klee-one);
+    --shea-body-weight: 500;
+    --aw-font-sans: var(--font-space-grotesk), var(--shea-cjk), sans-serif;
+    --aw-font-serif: var(--aw-font-sans);
+    --aw-font-heading: var(--aw-font-sans);
+    --shea-font-mono: var(--font-space-mono), var(--shea-cjk), monospace;
+    --aw-color-primary: rgb(40 78 50);
+    --aw-color-secondary: rgb(29 51 40);
+    --aw-color-accent: rgb(40 78 50);
+    --aw-color-text-heading: rgb(29 43 34);
+    --aw-color-text-default: rgb(29 43 34);
+    --aw-color-text-muted: rgb(94 107 97);
+    --aw-color-bg-page: rgb(246 248 242);
+    --aw-color-bg-page-dark: rgb(17 19 15);
+  }
 
-    --aw-color-primary: rgb(1 97 239);
-    --aw-color-secondary: rgb(1 84 207);
-    --aw-color-accent: rgb(109 40 217);
+  :root:lang(en) {
+    --shea-body-weight: 400;
+  }
 
-    --aw-color-text-heading: rgb(0 0 0);
-    --aw-color-text-default: rgb(16 16 16);
-    --aw-color-text-muted: rgb(16 16 16 / 66%);
-    --aw-color-bg-page: rgb(255 255 255);
+  :root:lang(ja) {
+    --shea-cjk: var(--font-klee-one), var(--font-wenkai);
+    --shea-body-weight: 400;
+  }
 
-    --aw-color-bg-page-dark: rgb(8 9 10);
+  [lang]:lang(zh) {
+    font-family: var(--font-space-grotesk), var(--font-wenkai), var(--font-klee-one), sans-serif;
+  }
 
-    ::selection {
-      background-color: lavender;
-    }
+  [lang]:lang(ja) {
+    font-family: var(--font-space-grotesk), var(--font-klee-one), var(--font-wenkai), sans-serif;
   }
 
   .dark {
-    --aw-font-sans: var(--font-inter);
-    --aw-font-serif: var(--font-inter);
-    --aw-font-heading: var(--font-inter);
-
-    --aw-color-primary: rgb(1 97 239);
-    --aw-color-secondary: rgb(1 84 207);
-    --aw-color-accent: rgb(109 40 217);
-
-    --aw-color-text-heading: rgb(247, 248, 248);
-    --aw-color-text-default: rgb(229 236 246);
-    --aw-color-text-muted: rgb(229 236 246 / 66%);
-    --aw-color-bg-page: rgb(8 9 10);
-
-    ::selection {
-      background-color: black;
-      color: snow;
-    }
+    --aw-color-primary: rgb(251 153 93);
+    --aw-color-secondary: rgb(255 174 123);
+    --aw-color-accent: rgb(251 153 93);
+    --aw-color-text-heading: rgb(241 240 230);
+    --aw-color-text-default: rgb(241 240 230);
+    --aw-color-text-muted: rgb(165 175 161);
+    --aw-color-bg-page: rgb(17 19 15);
   }
 </style>

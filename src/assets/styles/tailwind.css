@@ -18,11 +18,10 @@
   --color-muted: var(--aw-color-text-muted);
   --color-link: var(--aw-color-link, var(--aw-color-primary));
 
-  --font-sans:
-    var(--aw-font-sans, ui-sans-serif), ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-    'Segoe UI Symbol', 'Noto Color Emoji';
-  --font-serif: var(--aw-font-serif, ui-serif), ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
-  --font-heading: var(--aw-font-heading, ui-sans-serif), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--aw-font-sans);
+  --font-serif: var(--aw-font-serif);
+  --font-heading: var(--aw-font-heading);
+  --font-mono: var(--shea-font-mono);
 
   --animate-fade: fadeInUp 0.5s both;
 

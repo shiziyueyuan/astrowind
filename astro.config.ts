@@ -16,6 +16,7 @@ import type { AstroIntegration } from 'astro';
 import astrowind from './vendor/integration';
 
 import { readingTimeRemarkPlugin, responsiveTablesRehypePlugin } from './src/utils/frontmatter';
+import { journalMarkdownGuard } from './src/utils/journal-markdown';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -33,18 +34,45 @@ export default defineConfig({
     defaultStrategy: 'viewport',
   },
 
-  // Native Fonts API: self-hosts + subsets + preloads Inter and generates
-  // metric-adjusted fallbacks. Injected via <Font /> in Layout.astro and
-  // consumed through the `--font-inter` CSS variable in CustomStyles.astro.
+  // The native Fonts API serves open-source fonts from our own build output.
+  // Keep per-family fallbacks empty so Latin fonts do not hide CJK fonts.
   fonts: [
     {
       provider: fontProviders.fontsource(),
-      name: 'Inter',
-      cssVariable: '--font-inter',
-      weights: ['100 900'],
+      name: 'Space Grotesk',
+      cssVariable: '--font-space-grotesk',
+      weights: ['300 700'],
       styles: ['normal'],
       subsets: ['latin'],
-      fallbacks: ['sans-serif'],
+      fallbacks: [],
+    },
+    {
+      provider: fontProviders.fontsource(),
+      name: 'Space Mono',
+      cssVariable: '--font-space-mono',
+      weights: [400, 700],
+      styles: ['normal'],
+      subsets: ['latin'],
+      fallbacks: [],
+    },
+    {
+      provider: fontProviders.fontsource(),
+      name: 'LXGW WenKai',
+      cssVariable: '--font-wenkai',
+      weights: [500, 700],
+      styles: ['normal'],
+      // This provider's "latin" files contain WenKai's full Chinese glyph set.
+      subsets: ['latin'],
+      fallbacks: [],
+    },
+    {
+      provider: fontProviders.fontsource(),
+      name: 'Klee One',
+      cssVariable: '--font-klee-one',
+      weights: [400, 600],
+      styles: ['normal'],
+      subsets: ['japanese', 'latin'],
+      fallbacks: [],
     },
   ],
 
@@ -120,7 +148,7 @@ export default defineConfig({
 
   markdown: {
     processor: unified({
-      remarkPlugins: [readingTimeRemarkPlugin],
+      remarkPlugins: [readingTimeRemarkPlugin, journalMarkdownGuard],
       rehypePlugins: [responsiveTablesRehypePlugin],
     }),
     shikiConfig: {

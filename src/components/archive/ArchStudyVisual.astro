@@ -1,0 +1,70 @@
+---
+import type { Locale } from '~/i18n';
+import { archiveCopy } from '~/i18n/archive';
+interface Props {
+  locale: Locale;
+  compact?: boolean;
+}
+const { locale, compact = false } = Astro.props;
+const copy = archiveCopy[locale];
+// Normalized mathematical examples, generated independently of the private research data.
+const rise = 0.65;
+const radius = (rise * rise + 1) / (2 * rise);
+let low = 0.1;
+let high = 10;
+for (let i = 0; i < 60; i++) {
+  const mid = (low + high) / 2;
+  if (mid * (Math.cosh(1 / mid) - 1) > rise) low = mid;
+  else high = mid;
+}
+const a = (low + high) / 2;
+const functions = [
+  (x: number) => rise - radius + Math.sqrt(Math.max(0, radius * radius - x * x)),
+  (x: number) => rise * (1 - x * x),
+  (x: number) => rise - a * (Math.cosh(x / a) - 1),
+];
+const paths = functions.map((fn) =>
+  Array.from({ length: 161 }, (_, i) => {
+    const x = -1 + i / 80;
+    return `${i ? 'L' : 'M'}${(250 + x * 192).toFixed(2)},${(202 - fn(x) * 192).toFixed(2)}`;
+  }).join(' ')
+);
+---
+
+<figure class:list={['arch-visual', { 'is-compact': compact }]}>
+  <div class="arch-plot">
+    <div class="arch-plot-meta mono" aria-hidden="true"><span>GEOMETRY / 01</span><span>↗</span></div>
+    <svg viewBox="0 0 500 266" role="img" aria-label={`${copy.visualTitle} ${copy.visualDescription}`}>
+      <g class="arch-grid" fill="none" stroke="currentColor" stroke-width="0.6" aria-hidden="true">
+        {[58, 106, 154, 202, 250, 298, 346, 394, 442].map((x) => <path d={`M${x} 45V218`} />)}
+        {[58, 106, 154, 202].map((y) => <path d={`M44 ${y}H456`} />)}
+      </g>
+      <path d="M58 202H442M250 77V202" class="arch-baseline" fill="none"></path>
+      {paths.map((d, i) => <path d={d} class={`arch-curve arch-curve-${i}`} fill="none" />)}
+      <g class="arch-anchors" fill="currentColor">
+        <circle cx="58" cy="202" r="4"></circle><circle cx="442" cy="202" r="4"></circle><circle
+          cx="250"
+          cy="77.2"
+          r="4"></circle>
+      </g>
+      <g class="arch-annotation" fill="currentColor" font-size="12" text-anchor="middle">
+        <text x="58" y="239">{copy.anchors[0]}</text><text x="442" y="239">{copy.anchors[0]}</text><text x="250" y="59"
+          >{copy.anchors[1]}</text
+        >
+      </g>
+    </svg>
+  </div>
+  <figcaption>
+    <ul class="arch-legend">
+      {
+        copy.models.map((model, i) => (
+          <li>
+            <span class={`arch-swatch arch-swatch-${i}`} aria-hidden="true" />
+            {model}
+          </li>
+        ))
+      }
+    </ul>
+    <p>{copy.visualCaption}</p>
+  </figcaption>
+</figure>

@@ -1,24 +1,24 @@
 ---
-import Layout from '~/layouts/Layout.astro';
-import { getHomePermalink } from '~/utils/permalinks';
-
-const title = `Error 404`;
+import DesktopLayout from '~/layouts/DesktopLayout.astro';
+import DesktopHeader from '~/components/desktop/DesktopHeader.astro';
+import { localePath } from '~/i18n';
+import '~/assets/styles/journal.css';
 ---
 
-<Layout metadata={{ title }}>
-  <section class="flex items-center h-full p-16">
-    <div class="container flex flex-col items-center justify-center px-5 mx-auto my-8">
-      <div class="max-w-md text-center">
-        <h2 class="mb-8 font-bold text-9xl">
-          <span class="sr-only">Error</span>
-          <span class="text-primary">404</span>
-        </h2>
-        <p class="text-3xl font-semibold md:text-3xl">Sorry, we couldn't find this page.</p>
-        <p class="mt-4 mb-8 text-lg text-muted dark:text-slate-400">
-          But don't worry, you can find plenty of other things on our homepage.
+<DesktopLayout locale="zh" title="404 · 这扇窗口还没有内容" indexable={false}>
+  <div class="workspace journal-workspace">
+    <DesktopHeader locale="zh" /><main class="journal-main">
+      <a class="project-back mono" href={localePath('zh')}>↖ 返回桌面 / Back to desktop / デスクへ</a><header
+        class="journal-heading"
+      >
+        <p class="eyebrow mono">404 / NOT FOUND</p><h1>这扇窗口还没有内容。</h1><p>
+          This page could not be found. / ページが見つかりませんでした。
         </p>
-        <a rel="noopener noreferrer" href={getHomePermalink()} class="btn ml-4">Back to homepage</a>
-      </div>
-    </div>
-  </section>
-</Layout>
+      </header>
+    </main>
+  </div>
+</DesktopLayout>
+<script>
+  import { initThemeControls } from '~/utils/desktop-preferences';
+  initThemeControls();
+</script>

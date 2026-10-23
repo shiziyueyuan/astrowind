@@ -1,0 +1,52 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import type { Locale } from '~/i18n';
+import { languageNames } from '~/i18n';
+import { journalCopy } from '~/i18n/journal';
+import { journalHref, journalDate } from '~/utils/journal';
+import '~/assets/styles/journal.css';
+interface Props {
+  posts: CollectionEntry<'journal'>[];
+  locale: Locale;
+  compact?: boolean;
+}
+const { posts, locale, compact = false } = Astro.props;
+const copy = journalCopy[locale];
+---
+
+<section class="journal-list" aria-label={copy.title}>
+  {
+    posts.length ? (
+      posts.slice(0, compact ? 4 : undefined).map(({ data }) => (
+        <article
+          class="journal-item"
+          data-journal-item
+          data-search={`${data.title} ${data.description ?? ''} ${data.tags.join(' ')}`}
+        >
+          <p class="journal-meta mono">
+            <span>{copy.kinds[data.kind]}</span>
+            {data.publishDate && <time datetime={data.publishDate}>{journalDate(data.publishDate, locale)}</time>}
+            <span>{languageNames[data.locale]}</span>
+          </p>
+          <a class="journal-title" href={journalHref(locale, data.translationKey)}>
+            <>
+              <h3 lang={data.locale}>{data.title}</h3>
+              <span aria-hidden="true">↗</span>
+            </>
+          </a>
+          {data.description && <p lang={data.locale}>{data.description}</p>}
+        </article>
+      ))
+    ) : (
+      <p class="journal-empty">{copy.empty}</p>
+    )
+  }
+  {
+    compact && (
+      <a class="journal-all" href={journalHref(locale)}>
+        {copy.all}
+        <span aria-hidden="true"> ↗</span>
+      </a>
+    )
+  }
+</section>

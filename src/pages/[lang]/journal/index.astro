@@ -1,0 +1,54 @@
+---
+import { locales, localePath } from '~/i18n';
+import DesktopLayout from '~/layouts/DesktopLayout.astro';
+import DesktopHeader from '~/components/desktop/DesktopHeader.astro';
+import JournalList from '~/components/desktop/JournalList.astro';
+import { journalCopy } from '~/i18n/journal';
+import { journalForLocale } from '~/utils/journal';
+import '~/assets/styles/journal.css';
+export function getStaticPaths() {
+  return locales.map((lang) => ({ params: { lang }, props: { locale: lang } }));
+}
+const { locale } = Astro.props;
+const copy = journalCopy[locale];
+const posts = await journalForLocale(locale);
+---
+
+<DesktopLayout locale={locale} title={copy.title} description={copy.description} pathSuffix="/journal">
+  <div class="workspace journal-workspace">
+    <DesktopHeader locale={locale} pathSuffix="/journal" />
+    <main class="journal-main">
+      <a class="project-back mono" href={`${localePath(locale)}#lab`}>↖ {copy.back}</a>
+      <header class="journal-heading">
+        <p class="eyebrow mono">LAB / JOURNAL</p><h1>{copy.title}</h1><p>{copy.description}</p>
+      </header>
+      {
+        posts.length > 0 && (
+          <label class="journal-search">
+            <>
+              <span>{copy.search}</span>
+              <input type="search" data-journal-search placeholder={copy.search} autocomplete="off" />
+            </>
+          </label>
+        )
+      }
+      <JournalList posts={posts} locale={locale} />
+      <p class="journal-empty" data-journal-no-match hidden>{copy.noMatch}</p>
+      <p class="journal-readonly mono">{copy.readOnly}</p>
+    </main>
+    <footer class="desktop-footer"><span>SHEA / JOURNAL</span><span>时咨月圆 / Shea</span></footer>
+  </div>
+</DesktopLayout>
+<script>
+  import { initThemeControls, rememberLocaleSelection } from '~/utils/desktop-preferences';
+  initThemeControls();
+  rememberLocaleSelection();
+  const search = document.querySelector<HTMLInputElement>('[data-journal-search]');
+  const items = [...document.querySelectorAll<HTMLElement>('[data-journal-item]')];
+  search?.addEventListener('input', () => {
+    const query = search.value.trim().toLocaleLowerCase();
+    for (const item of items) item.hidden = !(item.dataset.search ?? '').toLocaleLowerCase().includes(query);
+    const empty = document.querySelector<HTMLElement>('[data-journal-no-match]');
+    if (empty) empty.hidden = items.some((item) => !item.hidden);
+  });
+</script>

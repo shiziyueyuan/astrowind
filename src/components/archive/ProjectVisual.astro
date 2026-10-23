@@ -1,0 +1,47 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { archiveCopy } from '~/i18n/archive';
+import ArchStudyVisual from './ArchStudyVisual.astro';
+import { siteBase } from '~/i18n';
+interface Props {
+  project: CollectionEntry<'project'>;
+  compact?: boolean;
+  href?: string;
+}
+const {
+  project: { data },
+  compact = false,
+  href = '#film',
+} = Astro.props;
+const copy = archiveCopy[data.locale];
+const media = data.video;
+---
+
+{
+  media ? (
+    <a
+      class:list={['video-cover', { 'is-compact': compact }]}
+      href={href}
+      aria-label={`${copy.video.play} · ${data.title}`}
+    >
+      <img
+        src={`${siteBase}${media.poster}`}
+        width="1280"
+        height="720"
+        alt={copy.video.posterAlt}
+        loading={compact ? 'lazy' : 'eager'}
+      />
+      <span class="video-cover-play" aria-hidden="true">
+        ▶
+      </span>
+      <span class="video-cover-label mono">
+        <>
+          <span>REMOTION / 02</span>
+          <span>{media.duration}</span>
+        </>
+      </span>
+    </a>
+  ) : (
+    <ArchStudyVisual locale={data.locale} compact={compact} />
+  )
+}

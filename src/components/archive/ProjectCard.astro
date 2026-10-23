@@ -1,0 +1,25 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { localePath } from '~/i18n';
+import { archiveCopy } from '~/i18n/archive';
+import ProjectVisual from './ProjectVisual.astro';
+interface Props {
+  project: CollectionEntry<'project'>;
+}
+const {
+  project: { data },
+} = Astro.props;
+const copy = archiveCopy[data.locale];
+const href = `${localePath(data.locale)}/archive/${data.translationKey}`;
+---
+
+<article class="archive-card">
+  <div class="archive-card-top mono">
+    <span>{String(data.order).padStart(2, '0')} / {data.category}</span><span>{data.status}</span>
+  </div>
+  <a class="archive-card-title" href={href}><h3>{data.title}</h3><span aria-hidden="true">↗</span></a>
+  <p class="archive-card-summary">{data.summary}</p>
+  <ProjectVisual project={Astro.props.project} compact href={href} />
+  <ul class="project-tags">{data.tags.map((tag) => <li>{tag}</li>)}</ul>
+  <a class="archive-open" href={href}>{copy.open}<span aria-hidden="true"> ↗</span></a>
+</article>

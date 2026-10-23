@@ -1,0 +1,59 @@
+---
+import { languageNames, localePath, locales, type Locale } from '~/i18n';
+import { dictionaries } from '~/i18n/dictionaries';
+import SheaWordmark from '~/assets/brand/shea-wordmark.svg';
+interface Props {
+  locale: Locale;
+  pathSuffix?: string;
+}
+const { locale, pathSuffix = '' } = Astro.props;
+const copy = dictionaries[locale];
+---
+
+<header class="desktop-header">
+  <a class="wordmark" href={localePath(locale)} aria-label="Shea / 时咨月圆">
+    <svg class="wordmark-emblem" viewBox="0 0 32 32" width="30" height="30" aria-hidden="true">
+      <path d="M2 2h14v14H2zm14 14h14v14H16z" fill="currentColor"></path>
+      <path d="M30 2a14 14 0 0 1-14 14V2zM2 30a14 14 0 0 1 14-14v14z" fill="currentColor"></path>
+    </svg>
+    <SheaWordmark class="shea-lettering" aria-hidden="true" />
+  </a>
+  <span class="workspace-label">{copy.workspace}</span>
+  <div class="header-controls">
+    <nav class="language-switch" aria-label={copy.language}>
+      {
+        locales.map((language) => (
+          <a
+            href={`${localePath(language)}${pathSuffix}`}
+            lang={language}
+            data-locale={language}
+            aria-current={language === locale ? 'page' : undefined}
+          >
+            {languageNames[language]}
+          </a>
+        ))
+      }
+    </nav>
+    <span class="control-divider" aria-hidden="true"></span>
+    <label class="theme-control">
+      <svg
+        width="17"
+        height="17"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"
+        aria-hidden="true"
+      >
+        <circle cx="12" cy="12" r="8"></circle><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor" stroke="none"></path>
+      </svg>
+      <span class="sr-only">{copy.theme}</span>
+      <select id="theme-select" aria-label={copy.theme}>
+        <option value="system">{copy.themes.system}</option>
+        <option value="light">{copy.themes.light}</option>
+        <option value="dark">{copy.themes.dark}</option>
+      </select>
+    </label>
+  </div>
+  <slot name="status" />
+</header>

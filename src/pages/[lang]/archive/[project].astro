@@ -1,0 +1,90 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import DesktopLayout from '~/layouts/DesktopLayout.astro';
+import DesktopHeader from '~/components/desktop/DesktopHeader.astro';
+import ProjectVisual from '~/components/archive/ProjectVisual.astro';
+import ProjectVideo from '~/components/archive/ProjectVideo.astro';
+import { localePath } from '~/i18n';
+import { archiveCopy } from '~/i18n/archive';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('project', ({ data }) => !data.draft);
+  return projects.map((project) => ({
+    params: { lang: project.data.locale, project: project.data.translationKey },
+    props: { project },
+  }));
+}
+interface Props {
+  project: CollectionEntry<'project'>;
+}
+const { project } = Astro.props;
+const { data } = project;
+const locale = data.locale;
+const copy = archiveCopy[locale];
+const stages = data.video ? copy.video.stages : copy.stages;
+const end = data.video ? copy.video.end : copy.end;
+const { Content, headings } = await render(project);
+const pathSuffix = `/archive/${data.translationKey}`;
+---
+
+<DesktopLayout locale={locale} title={data.title} description={data.summary} pathSuffix={pathSuffix}>
+  <a class="skip-link" href="#research">{copy.skip}</a>
+  <div class="workspace project-workspace">
+    <DesktopHeader locale={locale} pathSuffix={pathSuffix} />
+    <main>
+      <a class="project-back mono" href={`${localePath(locale)}#archive`}>↖ {copy.back}</a>
+      <header class:list={['project-hero', { 'is-video': Boolean(data.video) }]}>
+        <div class="project-intro">
+          <p class="eyebrow mono">ARCHIVE / {String(data.order).padStart(2, '0')}<span>{data.category}</span></p>
+          <h1>{data.title}</h1>
+          <p class="project-lede">{data.summary}</p>
+          <ul class="project-tags">{data.tags.map((tag) => <li>{tag}</li>)}</ul>
+          <p class="project-state mono"><span class="status-dot"></span>{data.status}</p>
+        </div>
+        <ProjectVisual project={project} />
+      </header>
+      <ol class="project-route">
+        {
+          stages.map((stage, i) => (
+            <li>
+              <span class="mono">0{i + 1}</span>
+              {stage}
+              <span class="route-arrow" aria-hidden="true">
+                ↗
+              </span>
+            </li>
+          ))
+        }
+      </ol>
+      <ProjectVideo project={project} />
+      <div class="project-reading">
+        <aside class="project-contents">
+          <nav aria-label={copy.contents}>
+            <p class="eyebrow mono">{copy.contents}</p>
+            <ol>
+              {
+                headings
+                  .filter((heading) => heading.depth === 2)
+                  .map((heading) => (
+                    <li>
+                      <a href={`#${heading.slug}`}>{heading.text}</a>
+                    </li>
+                  ))
+              }
+            </ol>
+          </nav>
+        </aside>
+        <article id="research" class="project-prose" tabindex="-1"><Content /></article>
+      </div>
+      <footer class="project-end">
+        <p>{end}</p><a href={`${localePath(locale)}#archive`}>{copy.back}<span aria-hidden="true"> ↗</span></a>
+      </footer>
+    </main>
+    <footer class="desktop-footer"><span>SHEA / ARCHIVE</span><span>时咨月圆 / Shea</span></footer>
+  </div>
+</DesktopLayout>
+<script>
+  import { initThemeControls, rememberLocaleSelection } from '~/utils/desktop-preferences';
+  initThemeControls();
+  rememberLocaleSelection();
+</script>

@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Shea · 写作间</title>
+    <link rel="stylesheet" href="/brand.css" />
+    <link rel="stylesheet" href="/studio.css" />
+    <script type="module" src="/studio.js"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="/">SHEA<span>.</span></a
+      ><span data-i18n="workspace">本机写作间</span
+      ><label class="language"
+        ><span data-i18n="language">语言</span
+        ><select id="ui-language">
+          <option value="zh">中文</option>
+          <option value="en">EN</option>
+          <option value="ja">日本語</option>
+        </select></label
+      >
+    </header>
+    <main>
+      <section class="intro">
+        <p class="eyebrow">LAB / WRITING STUDIO</p>
+        <h1 data-i18n="title">让零散的想法，有个地方落下。</h1>
+        <p data-i18n="intro">导入 Markdown，整理一下，然后决定是留作草稿，还是公开给路过的人看。</p>
+        <p class="quiet" data-i18n="private">这个管理页只在你的电脑上开放。公开博客只读，不开放评论或回复。</p>
+      </section>
+      <div class="studio-grid">
+        <section class="editor">
+          <div class="section-heading">
+            <h2 data-i18n="editor">写一篇</h2>
+            <button type="button" id="new-post" data-i18n="newPost">新文章</button>
+          </div>
+          <label class="dropzone" id="dropzone"
+            ><input type="file" id="markdown-file" accept=".md,text/markdown" /><span data-i18n="upload"
+              >选择或拖入 .md 文件</span
+            ><small data-i18n="uploadHint">也可以直接在下方写作。每次导入一份文件，最大 1 MB。</small></label
+          >
+          <form id="post-form">
+            <div class="field">
+              <label for="post-title" data-i18n="postTitle">标题</label
+              ><input id="post-title" name="title" required maxlength="200" />
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label for="post-language" data-i18n="postLanguage">正文语言</label
+                ><select id="post-language" name="locale">
+                  <option value="zh">中文</option>
+                  <option value="en">English</option>
+                  <option value="ja">日本語</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="post-kind" data-i18n="kind">分类</label
+                ><select id="post-kind" name="kind">
+                  <option value="note" data-i18n="kindNote">闲言碎语</option>
+                  <option value="log" data-i18n="kindLog">日志</option>
+                  <option value="essay" data-i18n="kindEssay">观点</option>
+                  <option value="experiment" data-i18n="kindExperiment">实验</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="post-date" data-i18n="date">日期</label
+                ><input id="post-date" name="date" type="date" required />
+              </div>
+            </div>
+            <div class="field">
+              <label for="post-key" data-i18n="address">文章地址</label
+              ><input
+                id="post-key"
+                name="key"
+                required
+                pattern="[a-z0-9]+(-[a-z0-9]+)*"
+                maxlength="100"
+                placeholder="a-little-thought"
+              /><small data-i18n="addressHint"
+                >小写英文字母、数字与短横线。不同语言使用相同地址，可以关联为译文。</small
+              >
+            </div>
+            <div class="field">
+              <label for="post-description" data-i18n="description">简介（可选）</label
+              ><textarea id="post-description" name="description" rows="2" maxlength="1000"></textarea>
+            </div>
+            <div class="field">
+              <label for="post-tags" data-i18n="tags">标签（逗号分隔，可选）</label
+              ><input id="post-tags" name="tags" maxlength="500" />
+            </div>
+            <div class="field">
+              <label for="post-body" data-i18n="body">正文 · Markdown</label
+              ><textarea id="post-body" name="body" rows="18" required spellcheck="false"></textarea
+              ><small data-i18n="bodyHint"
+                >支持标题、列表、引用、表格、代码与图片网址。正文不会自动翻译；其他语言页面会明确标注原文。</small
+              >
+            </div>
+            <div class="actions">
+              <button type="button" id="save-draft" data-i18n="saveDraft">保存草稿</button
+              ><button type="submit" class="primary" data-i18n="publishLocal">发布到本地预览</button>
+            </div>
+          </form>
+          <div class="status" id="status" role="status" aria-live="polite"></div>
+          <a id="result-link" hidden target="_blank" rel="noopener noreferrer" data-i18n="viewResult">查看文章</a>
+        </section>
+        <aside>
+          <section class="publication">
+            <h2 data-i18n="website">公开网站</h2>
+            <p data-i18n="syncHint">本地发布后，点击同步，公开网站会通过 GitHub 自动更新。</p>
+            <button type="button" id="sync-site" data-i18n="sync">同步到公开网站</button
+            ><a
+              href="https://shiziyueyuan.github.io/astrowind/zh/journal"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-i18n="visit"
+              >打开公开博客 ↗</a
+            >
+          </section>
+          <section>
+            <div class="section-heading">
+              <h2 data-i18n="writing">我的文字</h2>
+              <button type="button" id="refresh-posts" data-i18n="refresh">刷新</button>
+            </div>
+            <p class="quiet" data-i18n="draftHint">
+              草稿只保存在本机。修改已发布文章时，保存草稿会保留网站上的旧版本。
+            </p>
+            <ul id="posts" class="posts"></ul>
+            <p class="quiet" id="no-posts" data-i18n="noPosts">还没有文章，先写一点什么。</p>
+          </section>
+        </aside>
+      </div>
+    </main>
+    <footer data-i18n="footer">时咨月圆 / Shea · 只读的公开博客，自由的私人写作间。</footer>
+  </body>
+</html>

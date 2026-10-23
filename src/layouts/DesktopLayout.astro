@@ -1,0 +1,86 @@
+---
+import '~/assets/styles/tailwind.css';
+import '~/assets/styles/desktop.css';
+import '~/assets/styles/archive.css';
+import CustomStyles from '~/components/CustomStyles.astro';
+import BrandFonts from '~/components/common/BrandFonts.astro';
+import { languageTags, locales, localePath, siteBase, type Locale } from '~/i18n';
+import { dictionaries } from '~/i18n/dictionaries';
+import { SITE } from 'astrowind:config';
+
+interface Props {
+  locale: Locale;
+  desktop?: boolean;
+  indexable?: boolean;
+  title?: string;
+  description?: string;
+  pathSuffix?: string;
+}
+
+const { locale, title, description, pathSuffix = '', desktop = false, indexable = true } = Astro.props;
+const copy = dictionaries[locale];
+const publicBuild = import.meta.env.BASE_URL !== '/';
+const canonical = new URL(`${localePath(locale)}${pathSuffix}`, SITE.site).href;
+---
+
+<!doctype html>
+<html lang={languageTags[locale]} dir="ltr" data-theme="system">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title ? `${title} — Shea` : copy.pageTitle}</title>
+    <meta name="description" content={description ?? copy.description} />
+    <meta name="robots" content={publicBuild && indexable ? 'index, follow' : 'noindex, nofollow'} />
+    <link rel="canonical" href={canonical} />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" type="image/svg+xml" href={`${siteBase}shea-mark.svg`} />
+    {
+      locales.map((language) => (
+        <link
+          rel="alternate"
+          hreflang={languageTags[language]}
+          href={new URL(`${localePath(language)}${pathSuffix}`, SITE.site).href}
+        />
+      ))
+    }
+    <link rel="alternate" hreflang="x-default" href={pathSuffix ? `${localePath('zh')}${pathSuffix}` : siteBase} />
+    <BrandFonts />
+    <CustomStyles />
+    <script is:inline define:vars={{ desktop }}>
+      (() => {
+        if (!desktop) return;
+        let seen = false;
+        try {
+          seen = sessionStorage.getItem('shea-desktop-intro-v1') === 'seen';
+        } catch {
+          /* Storage is optional. */
+        }
+        if (!seen && !location.hash && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          document.documentElement.dataset.desktopBoot = 'pending';
+          // A failed or blocked module must never leave the desktop hidden.
+          setTimeout(() => {
+            if (document.documentElement.dataset.desktopBoot === 'pending')
+              delete document.documentElement.dataset.desktopBoot;
+          }, 4000);
+        }
+      })();
+    </script>
+    <script is:inline>
+      (() => {
+        let theme = 'system';
+        try {
+          const saved = localStorage.getItem('shea-theme');
+          if (['light', 'dark', 'system'].includes(saved)) theme = saved;
+        } catch {
+          /* Storage is optional. */
+        }
+        const dark = theme === 'dark' || (theme === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.classList.toggle('dark', dark);
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
+  </head>
+  <body class="shea-desktop">
+    <slot />
+  </body>
+</html>

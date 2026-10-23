@@ -68,6 +68,50 @@ const postCollection = defineCollection({
   }),
 });
 
+// Separate from the template's example posts; drafts are private by default.
+const journalCollection = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: 'src/data/journal' }),
+  schema: z.object({
+    title: z.string(),
+    locale: z.enum(['zh', 'en', 'ja']),
+    translationKey: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+    kind: z.enum(['note', 'log', 'essay', 'experiment']),
+    draft: z.boolean().default(true),
+    description: z.string().optional(),
+    publishDate: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/)
+      .optional(),
+    tags: z.array(z.string()).default([]),
+  }),
+});
+
+// Only deliberately rewritten public material belongs here; never import source documents.
+const projectCollection = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: 'src/data/project' }),
+  schema: z.object({
+    title: z.string(),
+    summary: z.string(),
+    locale: z.enum(['zh', 'en', 'ja']),
+    translationKey: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+    category: z.string(),
+    status: z.string(),
+    tags: z.array(z.string()).min(1),
+    order: z.number().int().positive(),
+    video: z
+      .object({
+        src: z.string().regex(/^media\/projects\/[a-z0-9/-]+\.mp4$/),
+        poster: z.string().regex(/^media\/projects\/[a-z0-9/-]+\.jpg$/),
+        captions: z.string().regex(/^media\/projects\/[a-z0-9/-]+\.vtt$/),
+        duration: z.string().regex(/^\d+:\d{2}$/),
+      })
+      .optional(),
+    draft: z.boolean().default(true),
+  }),
+});
+
 export const collections = {
   post: postCollection,
+  journal: journalCollection,
+  project: projectCollection,
 };
