@@ -9,17 +9,23 @@ type Sound = keyof typeof interfaceNotes;
 type Voices = Map<OscillatorNode, GainNode>;
 const storageKey = 'shea-sound-v1';
 
+// Astro's client router keeps this module alive while the translated DOM changes.
+let audio: ReturnType<typeof createDesktopAudio> | undefined;
 export function initDesktopAudio() {
-  const root = document.querySelector<HTMLDetailsElement>('[data-sound-controls]');
-  if (!root || root.dataset.initialized) return;
-  root.dataset.initialized = 'true';
-  const copy: Record<string, string> = JSON.parse(root.dataset.copy ?? '{}');
-  const power = root.querySelector<HTMLButtonElement>('[data-sound-power]')!;
-  const music = root.querySelector<HTMLInputElement>('[data-sound-music]')!;
-  const effects = root.querySelector<HTMLInputElement>('[data-sound-effects]')!;
-  const volume = root.querySelector<HTMLInputElement>('[data-sound-volume]')!;
-  const output = root.querySelector<HTMLOutputElement>('[data-sound-volume-value]')!;
-  const status = root.querySelector<HTMLElement>('[data-sound-status]')!;
+  audio ??= createDesktopAudio();
+  audio.bind();
+}
+
+function createDesktopAudio() {
+  let controls:
+    | {
+        root: HTMLDetailsElement;
+        power: HTMLButtonElement;
+        status: HTMLElement;
+        copy: Record<string, string>;
+      }
+    | undefined;
+  let controlsLifetime: AbortController | undefined;
   const preferences: SoundPreferences = { music: true, effects: true, volume: 28 };
   try {
     const saved = JSON.parse(localStorage.getItem(storageKey) ?? 'null');
@@ -32,15 +38,12 @@ export function initDesktopAudio() {
   } catch {
     /* Preferences are optional. Sound always starts off. */
   }
-  music.checked = preferences.music;
-  effects.checked = preferences.effects;
-  volume.value = String(preferences.volume);
-  output.value = `${preferences.volume}%`;
   let context: AudioContext | undefined;
   let master: GainNode;
   let musicBus: GainNode;
   let effectsBus: GainNode;
   let enabled = false;
+  let failed = false;
   let busy = false;
   let disposed = false;
   let scheduler = 0;
@@ -61,20 +64,24 @@ export function initDesktopAudio() {
       /* Optional storage. */
     }
   };
-  const refresh = (error = false) => {
+  const refresh = (error = failed) => {
+    if (!controls) return;
+    const { root, power, status, copy } = controls;
     const active = enabled && preferences.volume > 0 && (preferences.music || preferences.effects);
     root.dataset.active = String(active && !quiet());
     power.textContent = enabled ? copy.stop : copy.start;
     power.setAttribute('aria-pressed', String(enabled));
-    status.textContent = error
-      ? copy.unavailable
-      : !enabled || !preferences.volume
-        ? copy.off
-        : !preferences.music && !preferences.effects
-          ? copy.empty
-          : quiet()
-            ? copy.paused
-            : copy.on;
+    power.disabled = busy || !available;
+    status.textContent =
+      error || !available
+        ? copy.unavailable
+        : !enabled || !preferences.volume
+          ? copy.off
+          : !preferences.music && !preferences.effects
+            ? copy.empty
+            : quiet()
+              ? copy.paused
+              : copy.on;
   };
   const stopVoices = (voices: Voices) => {
     const now = context?.currentTime ?? 0;
@@ -199,68 +206,127 @@ export function initDesktopAudio() {
       if (context && (!enabled || document.hidden)) void context.suspend().catch(() => {});
     }, 90);
   };
-  root
-    .querySelectorAll<HTMLInputElement | HTMLButtonElement>('input, button')
-    .forEach((control) => (control.disabled = !available));
-  if (!available) {
-    refresh(true);
-    return;
-  }
-  power.addEventListener('click', async () => {
-    if (busy) return;
-    if (enabled) {
-      enabled = false;
+  const bind = () => {
+    const root = document.querySelector<HTMLDetailsElement>('[data-sound-controls]');
+    if (root === controls?.root) return;
+    controlsLifetime?.abort();
+    controls = undefined;
+    lastHover = null;
+    // A removed video must not keep the next page's music paused.
+    for (const media of playingMedia) if (!media.isConnected || media.paused) playingMedia.delete(media);
+    document.querySelectorAll<HTMLMediaElement>('video, audio').forEach((media) => {
+      if (!media.paused && !media.ended) playingMedia.add(media);
+    });
+    if (!root) {
       reconcile();
-      suspendSoon();
       return;
     }
-    busy = true;
-    power.disabled = true;
-    window.clearTimeout(suspendTimer);
-    let resumeTimer = 0;
-    try {
-      createContext();
-      await Promise.race([
-        context!.resume(),
-        new Promise((_, reject) => {
-          resumeTimer = window.setTimeout(() => reject(new Error('Audio could not start')), 6000);
-        }),
-      ]);
-      if (disposed) return;
-      if (context?.state !== 'running') throw new Error('Audio is unavailable');
-      enabled = true;
-      reconcile();
-      playEffect('open');
-    } catch {
-      enabled = false;
-      refresh(true);
-    } finally {
-      window.clearTimeout(resumeTimer);
-      busy = false;
-      power.disabled = false;
-    }
-  });
-  music.addEventListener('change', () => {
-    preferences.music = music.checked;
-    save();
-    reconcile();
-  });
-  effects.addEventListener('change', () => {
-    preferences.effects = effects.checked;
-    save();
-    reconcile();
-    playEffect('select');
-  });
-  volume.addEventListener('input', () => {
-    preferences.volume = Number(volume.value);
+    controlsLifetime = new AbortController();
+    const { signal } = controlsLifetime;
+    const copy: Record<string, string> = JSON.parse(root.dataset.copy ?? '{}');
+    const power = root.querySelector<HTMLButtonElement>('[data-sound-power]')!;
+    const music = root.querySelector<HTMLInputElement>('[data-sound-music]')!;
+    const effects = root.querySelector<HTMLInputElement>('[data-sound-effects]')!;
+    const volume = root.querySelector<HTMLInputElement>('[data-sound-volume]')!;
+    const output = root.querySelector<HTMLOutputElement>('[data-sound-volume-value]')!;
+    const status = root.querySelector<HTMLElement>('[data-sound-status]')!;
+    controls = { root, power, status, copy };
+    music.checked = preferences.music;
+    effects.checked = preferences.effects;
+    volume.value = String(preferences.volume);
     output.value = `${preferences.volume}%`;
-    save();
+    root
+      .querySelectorAll<HTMLInputElement | HTMLButtonElement>('input, button')
+      .forEach((control) => (control.disabled = !available));
+    power.addEventListener(
+      'click',
+      async () => {
+        if (busy) return;
+        if (enabled) {
+          enabled = false;
+          reconcile();
+          suspendSoon();
+          return;
+        }
+        busy = true;
+        failed = false;
+        power.disabled = true;
+        window.clearTimeout(suspendTimer);
+        let resumeTimer = 0;
+        try {
+          createContext();
+          await Promise.race([
+            context!.resume(),
+            new Promise((_, reject) => {
+              resumeTimer = window.setTimeout(() => reject(new Error('Audio could not start')), 6000);
+            }),
+          ]);
+          if (disposed) return;
+          if (context?.state !== 'running') throw new Error('Audio is unavailable');
+          enabled = true;
+          reconcile();
+          playEffect('open');
+        } catch {
+          enabled = false;
+          failed = true;
+          refresh(true);
+        } finally {
+          window.clearTimeout(resumeTimer);
+          busy = false;
+          refresh();
+        }
+      },
+      { signal }
+    );
+    music.addEventListener(
+      'change',
+      () => {
+        preferences.music = music.checked;
+        save();
+        reconcile();
+      },
+      { signal }
+    );
+    effects.addEventListener(
+      'change',
+      () => {
+        preferences.effects = effects.checked;
+        save();
+        reconcile();
+        playEffect('select');
+      },
+      { signal }
+    );
+    volume.addEventListener(
+      'input',
+      () => {
+        preferences.volume = Number(volume.value);
+        output.value = `${preferences.volume}%`;
+        save();
+        reconcile();
+      },
+      { signal }
+    );
+    root.addEventListener(
+      'keydown',
+      (event) => {
+        if (event.key === 'Escape' && root.open) {
+          event.preventDefault();
+          event.stopPropagation();
+          root.open = false;
+          root.querySelector('summary')?.focus();
+        }
+      },
+      { signal }
+    );
+    // Rebinding controls must leave the existing context, voices and score clock running.
     reconcile();
-  });
+  };
   document.addEventListener('click', (event) => {
     const target = event.target instanceof Element ? event.target : null;
-    if (root.open && target && !root.contains(target)) root.open = false;
-    if (!target || root.contains(target)) return;
+    const root = controls?.root;
+    if (root?.open && target && !root.contains(target)) root.open = false;
+    if (!target || root?.contains(target)) return;
     if (target.closest('[data-close-window]')) playEffect('close');
     else if (target.closest('[data-open-window]')) playEffect('open');
     else if (target.closest('[data-arrange-windows], [data-replay-intro], a')) playEffect('select');
@@ -270,16 +336,10 @@ export function initDesktopAudio() {
     if (target && target !== lastHover) playEffect('hover');
     lastHover = target;
   });
-  document.querySelector('#theme-select')?.addEventListener('change', () => playEffect('select'));
-  document.addEventListener('shea:copied', () => playEffect('copy'));
-  root.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && root.open) {
-      event.preventDefault();
-      event.stopPropagation();
-      root.open = false;
-      root.querySelector('summary')?.focus();
-    }
+  document.addEventListener('change', (event) => {
+    if (event.target instanceof Element && event.target.matches('#theme-select')) playEffect('select');
   });
+  document.addEventListener('shea:copied', () => playEffect('copy'));
   const mediaChange = (event: Event) => {
     if (!(event.target instanceof HTMLMediaElement)) return;
     if (event.type === 'play') playingMedia.add(event.target);
@@ -299,6 +359,7 @@ export function initDesktopAudio() {
         .then(reconcile)
         .catch(() => {
           enabled = false;
+          failed = true;
           reconcile();
           refresh(true);
         });
@@ -310,6 +371,7 @@ export function initDesktopAudio() {
     window.clearTimeout(suspendTimer);
     stopMusic();
     stopVoices(effectVoices);
+    playingMedia.clear();
     if (context) void context.close().catch(() => {});
     context = undefined;
     refresh();
@@ -319,5 +381,6 @@ export function initDesktopAudio() {
     disposed = false;
     refresh();
   });
-  refresh();
+  document.addEventListener('astro:after-swap', bind);
+  return { bind };
 }

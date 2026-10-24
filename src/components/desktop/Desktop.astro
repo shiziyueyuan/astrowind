@@ -260,10 +260,3 @@ const projects = (await getCollection('project', ({ data }) => !data.draft && da
   }
 </div>
 <BootSequence locale={locale} />
-<script>
-  import { initDesktop } from './desktop-controller';
-  import { initDesktopIntro } from './desktop-intro';
-  initDesktop();
-  const surface = document.querySelector<HTMLElement>('[data-desktop-surface]');
-  if (surface) initDesktopIntro(surface);
-</script>

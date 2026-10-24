@@ -1,4 +1,4 @@
-export function initContactTerminal() {
+export function initContactTerminal(signal: AbortSignal) {
   document.querySelectorAll<HTMLElement>('[data-contact-terminal]').forEach((root) => {
     if (root.dataset.initialized) return;
     root.dataset.initialized = 'true';
@@ -22,6 +22,7 @@ export function initContactTerminal() {
         try {
           if (!navigator.clipboard?.writeText) throw new Error('Manual copy required');
           await navigator.clipboard.writeText(account);
+          if (signal.aborted) return;
           document.dispatchEvent(new Event('shea:copied'));
           if (label) label.textContent = root.dataset.copyDone ?? idleLabel;
           if (feedback && request === latestRequest)
@@ -37,6 +38,7 @@ export function initContactTerminal() {
             }, 2200)
           );
         } catch {
+          if (signal.aborted) return;
           if (label) label.textContent = idleLabel;
           if (request === latestRequest) {
             const value = button.closest('[data-contact-channel]')?.querySelector('[data-contact-value]');
@@ -55,11 +57,12 @@ export function initContactTerminal() {
       });
     });
 
-    window.addEventListener(
-      'pagehide',
+    signal.addEventListener(
+      'abort',
       () => {
         for (const timer of resetTimers.values()) window.clearTimeout(timer);
         resetTimers.clear();
+        delete root.dataset.initialized;
       },
       { once: true }
     );

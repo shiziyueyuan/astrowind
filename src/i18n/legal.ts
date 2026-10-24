@@ -26,7 +26,7 @@ export const legalCopy = {
         paragraphs: [
           '新增网页声音名为 Open Desk / 桌面微光：由为本站新写的音符序列、和弦规则与基础合成波形实时生成，未使用外部歌曲、录音、第三方音色采样或音乐流媒体。',
           '声音实现代码随网站开源仓库按 MIT 许可证提供。项目视频中的配乐、录音与其他素材仍分别受其权利和许可约束；这里的声音来源说明不代替这些素材的授权核对。',
-          '每次进入页面，声音默认关闭，由访客主动开启。音量、音乐与音效选项保存在本机；页面在后台或项目视频播放时暂停桌面声音。',
+          '首次打开或完整刷新网站时，声音默认关闭，由访客主动开启。开启后，站内切换页面和语言会延续播放及静音状态。音量、音乐与音效选项保存在本机；页面在后台或项目视频播放时暂停桌面声音。',
         ],
       },
       {
@@ -88,7 +88,7 @@ export const legalCopy = {
         paragraphs: [
           'Open Desk is the newly added website soundscape. A score, chord rules and basic synthesis waveforms written for this site generate it in real time, without external songs, recordings, third-party instrument samples or music streaming services.',
           'The sound implementation code is provided under the website repository’s MIT licence. Music, recordings and other materials inside project videos remain subject to their respective rights and licences. These source notes do not replace permission checks for those materials.',
-          'Sound starts off on every page and requires a visitor to enable it. Volume and music/effects options stay on the device. Desktop sounds pause in background tabs and during project video playback.',
+          'Sound starts off on a fresh visit or full reload and requires a visitor to enable it. Internal page and language changes preserve playback or mute state. Volume and music/effects options stay on the device. Desktop sounds pause in background tabs and during project video playback.',
         ],
       },
       {
@@ -150,7 +150,7 @@ export const legalCopy = {
         paragraphs: [
           '新たに追加した音の名前は Open Desk / デスクの灯りです。このサイト用に書いた音列、和音の規則、基本波形からリアルタイムに合成します。外部の楽曲、録音、第三者の音色サンプル、音楽配信サービスは使用していません。',
           '音の実装コードは、サイトのリポジトリの MIT ライセンスで提供します。プロジェクト動画内の音楽、録音、その他の素材には、それぞれの権利とライセンスが適用されます。この出典説明は、それらの利用許諾の確認に代わるものではありません。',
-          'ページを開くたびに音は消音状態で始まり、訪問者が有効にします。音量と音楽・操作音の設定は端末内に保存します。バックグラウンドやプロジェクト動画の再生中はデスクの音を一時停止します。',
+          '初回アクセスやページ全体の再読み込みでは消音状態で始まり、訪問者が有効にします。サイト内のページや言語を切り替えても再生・消音状態は維持されます。音量と音楽・操作音の設定は端末内に保存します。バックグラウンドやプロジェクト動画の再生中はデスクの音を一時停止します。',
         ],
       },
       {

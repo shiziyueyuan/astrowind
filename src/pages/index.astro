@@ -2,6 +2,7 @@
 import { localePath } from '~/i18n';
 import BrandFonts from '~/components/common/BrandFonts.astro';
 import CustomStyles from '~/components/CustomStyles.astro';
+import { ClientRouter } from 'astro:transitions';
 ---
 
 <!doctype html>
@@ -13,6 +14,7 @@ import CustomStyles from '~/components/CustomStyles.astro';
     <title>时咨月圆 / Shea</title>
     <BrandFonts />
     <CustomStyles />
+    <ClientRouter fallback="swap" />
     <style>
       :root {
         color-scheme: light dark;
@@ -37,7 +39,7 @@ import CustomStyles from '~/components/CustomStyles.astro';
     </style>
   </head>
   <body>
-    <main>
+    <main data-locale-entry>
       <h1>时咨月圆 / Shea</h1>
       <nav aria-label="语言 / Language / 言語">
         <a href={localePath('zh')} lang="zh-Hans">进入中文桌面</a>
@@ -47,14 +49,18 @@ import CustomStyles from '~/components/CustomStyles.astro';
     </main>
     <script>
       import { resolveLocale, localePath } from '~/i18n';
-      let saved: string | null = null;
-      try {
-        saved = localStorage.getItem('shea-locale');
-      } catch {
-        /* Storage is optional. */
-      }
-      const locale = resolveLocale(navigator.languages ?? [navigator.language], saved);
-      location.replace(`${localePath(locale)}${location.search}${location.hash}`);
+      import { navigate } from 'astro:transitions/client';
+      document.addEventListener('astro:page-load', () => {
+        if (!document.querySelector('[data-locale-entry]')) return;
+        let saved: string | null = null;
+        try {
+          saved = localStorage.getItem('shea-locale');
+        } catch {
+          /* Storage is optional. */
+        }
+        const locale = resolveLocale(navigator.languages ?? [navigator.language], saved);
+        void navigate(`${localePath(locale)}${location.search}${location.hash}`, { history: 'replace' });
+      });
     </script>
   </body>
 </html>

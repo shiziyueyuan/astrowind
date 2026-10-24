@@ -7,6 +7,7 @@ import BrandFonts from '~/components/common/BrandFonts.astro';
 import { languageTags, locales, localePath, siteBase, type Locale } from '~/i18n';
 import { dictionaries } from '~/i18n/dictionaries';
 import { SITE } from 'astrowind:config';
+import { ClientRouter } from 'astro:transitions';
 
 interface Props {
   locale: Locale;
@@ -46,6 +47,7 @@ const canonical = new URL(`${localePath(locale)}${pathSuffix}`, SITE.site).href;
     <link rel="alternate" hreflang="x-default" href={pathSuffix ? `${localePath('zh')}${pathSuffix}` : siteBase} />
     <BrandFonts />
     <CustomStyles />
+    <ClientRouter fallback="swap" />
     <script is:inline define:vars={{ desktop }}>
       (() => {
         if (!desktop) return;
@@ -82,5 +84,8 @@ const canonical = new URL(`${localePath(locale)}${pathSuffix}`, SITE.site).href;
   </head>
   <body class="shea-desktop">
     <slot />
+    <script>
+      import '~/utils/desktop-runtime';
+    </script>
   </body>
 </html>

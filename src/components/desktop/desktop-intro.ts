@@ -1,6 +1,6 @@
 const introStorageKey = 'shea-desktop-intro-v1';
 
-export function initDesktopIntro(surface: HTMLElement) {
+export function initDesktopIntro(surface: HTMLElement, signal: AbortSignal) {
   const overlay = document.querySelector<HTMLElement>('[data-boot-screen]');
   const skip = overlay?.querySelector<HTMLButtonElement>('[data-skip-intro]');
   if (!overlay || !skip) {
@@ -84,10 +84,14 @@ export function initDesktopIntro(surface: HTMLElement) {
     }
   });
   document.querySelector('[data-replay-intro]')?.addEventListener('click', start);
-  reducedMotion.addEventListener('change', () => {
-    if (reducedMotion.matches && active) finish(true);
-  });
-  window.addEventListener('pagehide', () => finish(true));
+  reducedMotion.addEventListener(
+    'change',
+    () => {
+      if (reducedMotion.matches && active) finish(true);
+    },
+    { signal }
+  );
+  signal.addEventListener('abort', () => finish(true), { once: true });
   let seen = false;
   try {
     seen = sessionStorage.getItem(introStorageKey) === 'seen';

@@ -1,4 +1,3 @@
-import { initThemeControls } from '~/utils/desktop-preferences';
 import { regionIds, type RegionId } from '~/i18n/dictionaries';
 import {
   cascadePosition,
@@ -29,12 +28,11 @@ function viewportBounds(): Viewport {
   };
 }
 
-export function initDesktop() {
+export function initDesktop(signal: AbortSignal) {
   const root = document.querySelector<HTMLElement>('.workspace');
   if (!root || root.dataset.initialized) return;
   root.dataset.initialized = 'true';
 
-  initThemeControls();
   const clock = root.querySelector<HTMLTimeElement>('[data-desktop-clock]');
   if (clock) {
     const clockLocale =
@@ -50,7 +48,7 @@ export function initDesktop() {
     };
     updateClock();
     const timer = window.setInterval(updateClock, 30000);
-    window.addEventListener('pagehide', () => clearInterval(timer), { once: true });
+    signal.addEventListener('abort', () => clearInterval(timer), { once: true });
   }
 
   const dialogs = new Map<RegionId, HTMLDialogElement>();
@@ -95,7 +93,7 @@ export function initDesktop() {
       button.classList.toggle('is-active', id === active);
     });
     const suffix = active ? `#${active}` : '';
-    history.replaceState(null, '', `${location.pathname}${location.search}${suffix}`);
+    history.replaceState(history.state, '', `${location.pathname}${location.search}${suffix}`);
   };
 
   const bringToFront = (id: RegionId) => {
@@ -266,27 +264,46 @@ export function initDesktop() {
     });
   }
 
-  window.addEventListener('pointermove', (event) => {
-    if (!drag || drag.pointerId !== event.pointerId) return;
-    pending = { x: drag.origin.x + event.clientX - drag.pointer.x, y: drag.origin.y + event.clientY - drag.pointer.y };
-    if (!dragFrame) dragFrame = requestAnimationFrame(flushDrag);
-  });
-  window.addEventListener('pointerup', (event) => {
-    if (drag?.pointerId === event.pointerId) {
+  window.addEventListener(
+    'pointermove',
+    (event) => {
+      if (!drag || drag.pointerId !== event.pointerId) return;
       pending = {
         x: drag.origin.x + event.clientX - drag.pointer.x,
         y: drag.origin.y + event.clientY - drag.pointer.y,
       };
-      finishDrag();
-    }
-  });
-  window.addEventListener('pointercancel', (event) => {
-    if (drag?.pointerId === event.pointerId) finishDrag();
-  });
-  window.addEventListener('blur', finishDrag);
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden) finishDrag();
-  });
+      if (!dragFrame) dragFrame = requestAnimationFrame(flushDrag);
+    },
+    { signal }
+  );
+  window.addEventListener(
+    'pointerup',
+    (event) => {
+      if (drag?.pointerId === event.pointerId) {
+        pending = {
+          x: drag.origin.x + event.clientX - drag.pointer.x,
+          y: drag.origin.y + event.clientY - drag.pointer.y,
+        };
+        finishDrag();
+      }
+    },
+    { signal }
+  );
+  window.addEventListener(
+    'pointercancel',
+    (event) => {
+      if (drag?.pointerId === event.pointerId) finishDrag();
+    },
+    { signal }
+  );
+  window.addEventListener('blur', finishDrag, { signal });
+  document.addEventListener(
+    'visibilitychange',
+    () => {
+      if (document.hidden) finishDrag();
+    },
+    { signal }
+  );
 
   let resizeFrame = 0;
   const resizeWindows = () => {
@@ -303,9 +320,9 @@ export function initDesktop() {
       persist();
     });
   };
-  window.addEventListener('resize', resizeWindows);
-  window.visualViewport?.addEventListener('resize', resizeWindows);
-  window.visualViewport?.addEventListener('scroll', resizeWindows);
+  window.addEventListener('resize', resizeWindows, { signal });
+  window.visualViewport?.addEventListener('resize', resizeWindows, { signal });
+  window.visualViewport?.addEventListener('scroll', resizeWindows, { signal });
 
   document.querySelectorAll<HTMLButtonElement>('[data-open-window]').forEach((button) => {
     button.addEventListener('click', () => {
@@ -337,14 +354,24 @@ export function initDesktop() {
       link.href = target.href;
     });
   });
-  window.addEventListener('hashchange', () => {
-    const id = regionIds.find((region) => region === location.hash.slice(1));
-    if (id) openWindow(id);
-  });
-  window.addEventListener('pagehide', () => {
-    finishDrag();
-    persist();
-  });
+  window.addEventListener(
+    'hashchange',
+    () => {
+      const id = regionIds.find((region) => region === location.hash.slice(1));
+      if (id) openWindow(id);
+    },
+    { signal }
+  );
+  signal.addEventListener(
+    'abort',
+    () => {
+      finishDrag();
+      if (resizeFrame) cancelAnimationFrame(resizeFrame);
+      persist();
+      delete root.dataset.initialized;
+    },
+    { once: true }
+  );
 
   try {
     const saved = parseWindowLayout(JSON.parse(sessionStorage.getItem(storageKey) ?? 'null'), regionIds);
