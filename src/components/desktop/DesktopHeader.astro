@@ -2,6 +2,8 @@
 import { languageNames, localePath, locales, type Locale } from '~/i18n';
 import { dictionaries } from '~/i18n/dictionaries';
 import SheaWordmark from '~/assets/brand/shea-wordmark.svg';
+import SoundControls from './SoundControls.astro';
+import { legalCopy } from '~/i18n/legal';
 interface Props {
   locale: Locale;
   pathSuffix?: string;
@@ -54,6 +56,66 @@ const copy = dictionaries[locale];
         <option value="dark">{copy.themes.dark}</option>
       </select>
     </label>
+    <SoundControls locale={locale} />
+    <a
+      class="header-legal"
+      href={`${localePath(locale)}/legal`}
+      aria-label={legalCopy[locale].title}
+      title={legalCopy[locale].title}
+    >
+      <span aria-hidden="true">§</span><span class="header-legal-label">{legalCopy[locale].label}</span>
+    </a>
   </div>
   <slot name="status" />
 </header>
+
+<style>
+  .header-legal {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    min-height: 44px;
+    color: var(--desk-muted);
+    font-size: 10px;
+    white-space: nowrap;
+  }
+  .header-legal:hover {
+    color: var(--desk-ink);
+  }
+  .header-legal > span:first-child {
+    font-size: 16px;
+  }
+  @media (max-width: 700px) {
+    :global(.shea-desktop) .desktop-header {
+      gap: 8px;
+    }
+    .desktop-header .header-controls {
+      gap: 7px;
+    }
+    .desktop-header .wordmark > .shea-lettering {
+      width: 68px;
+    }
+    .desktop-header .language-switch {
+      gap: 8px;
+      font-size: 9px;
+    }
+    .desktop-header .theme-control svg {
+      display: none;
+    }
+    .header-legal-label {
+      display: none;
+    }
+    .header-legal {
+      min-width: 24px;
+    }
+  }
+  @media (max-width: 370px) {
+    .desktop-header .wordmark-emblem {
+      display: none;
+    }
+    .desktop-header .header-controls {
+      gap: 5px;
+    }
+  }
+</style>

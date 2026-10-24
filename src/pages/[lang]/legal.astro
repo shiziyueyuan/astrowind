@@ -1,0 +1,124 @@
+---
+import DesktopLayout from '~/layouts/DesktopLayout.astro';
+import DesktopHeader from '~/components/desktop/DesktopHeader.astro';
+import { locales, localePath, siteBase, type Locale } from '~/i18n';
+import { legalCopy } from '~/i18n/legal';
+import '~/assets/styles/journal.css';
+export function getStaticPaths() {
+  return locales.map((locale) => ({ params: { lang: locale }, props: { locale } }));
+}
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const copy = legalCopy[locale];
+const fonts = ['LXGW-WenKai', 'Klee-One', 'Space-Grotesk', 'Space-Mono'];
+---
+
+<DesktopLayout locale={locale} title={copy.title} description={copy.description} pathSuffix="/legal">
+  <div class="workspace journal-workspace">
+    <DesktopHeader locale={locale} pathSuffix="/legal" />
+    <main class="journal-main legal-main">
+      <a class="project-back mono" href={localePath(locale)}>↖ {copy.back}</a>
+      <header class="journal-heading">
+        <p class="journal-meta mono">LEGAL / PRIVACY</p><h1>{copy.title}</h1><p>{copy.description}</p><p
+          class="journal-meta"
+        >
+          {copy.updated} · <time datetime="2026-10-24">2026-10-24</time>
+        </p>
+      </header>
+      <nav class="legal-index" aria-label={copy.title}>
+        {copy.sections.map((section) => <a href={`#${section.id}`}>{section.title} ↗</a>)}
+      </nav>
+      <div class="journal-prose">
+        {
+          copy.sections.map((section) => (
+            <section id={section.id}>
+              <h2>{section.title}</h2>
+              {section.paragraphs.map((paragraph) => (
+                <p>{paragraph}</p>
+              ))}
+              {section.id === 'sound' && (
+                <p>
+                  <a href="https://github.com/shiziyueyuan/astrowind/blob/main/src/utils/audio-score.ts">
+                    {copy.score} ↗
+                  </a>
+                </p>
+              )}
+              {section.id === 'licenses' && (
+                <ul>
+                  <li>
+                    <a href={`${siteBase}legal/astrowind-MIT.txt`}>{copy.mit}</a>
+                  </li>
+                  {fonts.map((font) => (
+                    <li>
+                      <a href={`${siteBase}fonts/licenses/${font}.txt`}>{font.replaceAll('-', ' ')} · SIL OFL 1.1</a>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {section.id === 'contact' && (
+                <p>
+                  <a href={`${localePath(locale)}#signal`}>{copy.contact} ↗</a>
+                </p>
+              )}
+            </section>
+          ))
+        }
+        <section id="references">
+          <h2>{copy.references}</h2><ul>
+            <li><a href="https://opensource.org/license/mit">MIT License · Open Source Initiative</a></li>
+            <li>
+              <a href="https://openfontlicense.org/open-font-license-official-text/">SIL Open Font License 1.1</a>
+            </li>
+            <li>
+              <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages"
+                >GitHub Pages · Data collection</a
+              >
+            </li>
+            <li>
+              <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement"
+                >GitHub Privacy Statement</a
+              >
+            </li>
+            <li>
+              <a href="https://fjca.miit.gov.cn/zwgk/zcwj/wjfb/art/2020/art_3fd5e3c5e6624d95af229036f95e20d3.html"
+                >中华人民共和国著作权法</a
+              >
+            </li>
+          </ul>
+        </section>
+      </div>
+    </main>
+    <footer class="desktop-footer"><span>SHEA / LEGAL</span><span>时咨月圆 / Shea</span></footer>
+  </div>
+</DesktopLayout>
+<script>
+  import { initThemeControls, rememberLocaleSelection } from '~/utils/desktop-preferences';
+  initThemeControls();
+  rememberLocaleSelection();
+</script>
+<style>
+  .legal-index {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 24px;
+    padding: 0 0 32px;
+    margin-bottom: 34px;
+    border-bottom: 1px solid var(--desk-line);
+    font-size: 11px;
+    color: var(--desk-muted);
+  }
+  .legal-index a {
+    padding: 5px 0;
+  }
+  .legal-main section {
+    scroll-margin-top: 25px;
+  }
+  .legal-main .journal-prose {
+    max-width: 800px;
+  }
+  .legal-main li {
+    overflow-wrap: anywhere;
+  }
+</style>

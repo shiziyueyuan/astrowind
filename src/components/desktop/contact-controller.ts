@@ -22,6 +22,7 @@ export function initContactTerminal() {
         try {
           if (!navigator.clipboard?.writeText) throw new Error('Manual copy required');
           await navigator.clipboard.writeText(account);
+          document.dispatchEvent(new Event('shea:copied'));
           if (label) label.textContent = root.dataset.copyDone ?? idleLabel;
           if (feedback && request === latestRequest)
             feedback.textContent = (root.dataset.copySuccess ?? '').replace(
